@@ -36,7 +36,7 @@ namespace TSCodegen
 
             for (int n = 0; n < Items.Count; n++)
             {
-                TypeScriptType item = Items[n];
+                var item = Items[n];
                 result.AddRange(item.GetDeclaration(indentitationSize));
 
                 if (n < Items.Count - 1)
