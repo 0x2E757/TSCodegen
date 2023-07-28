@@ -19,6 +19,7 @@ namespace TSCodegen
         public bool IsDictionary { get; private set; } = false;
         public bool IsNullable { get; private set; } = false;
 
+        public TypeScriptType Parent { get; private set; } = null;
         public TypeScriptType DictionaryKey { get; private set; } = null;
         public List<TypeScriptType> GenericArguments { get; private set; } = new List<TypeScriptType>();
         public List<TypeScriptType> OpenGenericArguments { get; private set; } = new List<TypeScriptType>();
@@ -27,6 +28,7 @@ namespace TSCodegen
 
         public Type CSharpType { get; } = default;
 
+        public bool HasParent => Parent != null;
         public bool IsGeneric => GenericArguments.Count > 0;
         public bool HasDeclaration => IsEnum || IsClass;
         public override string ToString() => GetFullTypeName();
@@ -205,10 +207,23 @@ namespace TSCodegen
                 type = type.GetGenericTypeDefinition();
 
             foreach (var field in type.GetFields())
+            {
+                if (Properties.ContainsKey(field.Name))
+                    throw new Exception($"Classes with redeclared inherited fields are not allowed ({type.GetNameWithoutGenericArity()}.{field.Name}).");
+
                 Properties.Add(field.Name, new TypeScriptType(field.FieldType));
+            }
 
             foreach (var property in type.GetProperties())
+            {
+                if (Properties.ContainsKey(property.Name))
+                    throw new Exception($"Classes with redeclared inherited properties are not allowed ({type.GetNameWithoutGenericArity()}.{property.Name}).");
+
                 Properties.Add(property.Name, new TypeScriptType(property.PropertyType));
+            }
+
+            if (type.BaseType != typeof(object))
+                Parent = new TypeScriptType(type.BaseType);
 
             return true;
         }
@@ -269,10 +284,24 @@ namespace TSCodegen
                     typeName += $"<{string.Join(", ", generics)}>";
                 }
 
-                result.Add($"interface {typeName} {{");
+                var declarationHeader = $"{typeName}";
+
+                if (HasParent)
+                {
+                    declarationHeader += $" extends {Parent.BaseTypeName}";
+
+                    if (Parent.IsGeneric)
+                    {
+                        var generics = Parent.GenericArguments.Select(ga => ga.BaseTypeName).ToArray();
+                        declarationHeader += $"<{string.Join(", ", generics)}>";
+                    }
+                }
+
+                result.Add($"interface {declarationHeader} {{");
 
                 foreach (var property in Properties)
-                    result.Add(indentitation + $"{property.Key.ToCamelCase()}: {property.Value.GetFullTypeName()};");
+                    if (!HasParent || !Parent.Properties.ContainsKey(property.Key))
+                        result.Add(indentitation + $"{property.Key.ToCamelCase()}: {property.Value.GetFullTypeName()};");
 
                 result.Add($"}}");
             }

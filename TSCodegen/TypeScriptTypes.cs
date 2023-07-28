@@ -26,6 +26,9 @@ namespace TSCodegen
                 if (!genericArgument.CSharpType.IsGenericParameter)
                     Add(genericArgument);
 
+            if (typeScriptType.HasParent)
+                Add(typeScriptType.Parent);
+
             if (typeScriptType.HasDeclaration)
                 Items.Add(typeScriptType);
         }
