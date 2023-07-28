@@ -2,15 +2,15 @@
 <package>
   <metadata>
     <id>TSCodegen</id>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <authors>0x2E757</authors>
     <owners>0x2E757</owners>
     <license type="expression">MIT</license>
-    <repository type="git" url="https://github.com/0x2E757/TSCodegen.git" branch="master" />
+    <repository type="git" url="https://github.com/0x2E757/TSCodegen.git" branch="main" />
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library for C# to TypeScript type conversion</description>
     <copyright>Copyright 2023</copyright>
-    <tags>codegen code generation generator c# csharp ts typescript type types declaration declarations interfaces enums</tags>
+    <tags>tscodegen codegen code generation generator c# csharp sharp ts typescript type types declaration declarations interfaces enums</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
         <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.9" />
