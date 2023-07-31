@@ -33,6 +33,12 @@ namespace TSCodegen
                 Items.Add(typeScriptType);
         }
 
+        public void Add(IEnumerable<TypeScriptType> typeScriptTypes)
+        {
+            foreach (var typeScriptType in typeScriptTypes)
+                Add(typeScriptType);
+        }
+
         public List<string> GetDeclarations(int indentitationSize)
         {
             var result = new List<string>();
