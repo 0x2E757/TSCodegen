@@ -8,8 +8,6 @@ Compatible with .NET Standard 2.0 and higher!
 
 Library contains two classes - `TypeScriptType` and `TypeScriptTypes`. The first is for creating primitive types and interface names. The second is for creating declarations from classes and enums.
 
-<sub>\* The `Add` method of the `TypeScriptTypes` class will recursively add all related to the argument types.</sub>
-
 Conversion table:
 
 - Void → `void`
@@ -77,8 +75,11 @@ public List<string> GetDeclaration(int indentitationSize);
 public List<TypeScriptType> Items { get; }
 // Methods
 public void Add(TypeScriptType typeScriptType);
+public void Add(IEnumerable<TypeScriptType> typeScriptTypes);
 public List<string> GetDeclarations(int indentitationSize);
 ```
+
+<sub>\* The `Add` method of the `TypeScriptTypes` class will recursively add all related to the argument types.</sub>
 
 ## Example Application 1
 
