@@ -284,7 +284,7 @@ namespace TSCodegen
                     typeName += $"<{string.Join(", ", generics)}>";
                 }
 
-                var declarationHeader = (export ? "export " : "") + $"{typeName}";
+                var declarationHeader = $"{typeName}";
 
                 if (HasParent)
                 {
@@ -297,7 +297,7 @@ namespace TSCodegen
                     }
                 }
 
-                result.Add($"interface {declarationHeader} {{");
+                result.Add((export ? "export " : "") + $"interface {declarationHeader} {{");
 
                 foreach (var property in Properties)
                     if (!HasParent || !Parent.Properties.ContainsKey(property.Key))
@@ -308,7 +308,7 @@ namespace TSCodegen
 
             if (IsEnum)
             {
-                result.Add($"enum {BaseTypeName} {{");
+                result.Add((export ? "export " : "") + $"enum {BaseTypeName} {{");
 
                 foreach (var value in Values)
                     result.Add(indentitation + $"{value.Key.ToCamelCase()} = {value.Value},");
