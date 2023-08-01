@@ -83,40 +83,43 @@ namespace TSCodegen
                 return true;
             }
 
-            if (type.GetInterfaces().Contains(typeof(IEnumerable<>)))
-            {
-                IsArray = true;
-                type = type.GenericTypeArguments[0];
-                return true;
-            }
-
-            if (type.Name == typeof(Dictionary<,>).Name)
-            {
-                IsDictionary = true;
-                DictionaryKey = new TypeScriptType(type.GenericTypeArguments[0]);
-                type = type.GenericTypeArguments[1];
-                return true;
-            }
-
-            if (type.Name == typeof(Nullable<>).Name)
-            {
-                IsNullable = true;
-                type = type.GenericTypeArguments[0];
-                return true;
-            }
-
-            if (type.Name == typeof(Task<>).Name)
-            {
-                IsNullable = true;
-                type = type.GenericTypeArguments[0];
-                return true;
-            }
-
-            if (type.Name == typeof(Task).Name)
+            if (type == typeof(Task))
             {
                 IsNullable = true;
                 type = typeof(void);
                 return true;
+            }
+
+            if (type.IsGenericType)
+            {
+                if (type.GetGenericTypeDefinition() == typeof(Task<>))
+                {
+                    IsNullable = true;
+                    type = type.GenericTypeArguments[0];
+                    return true;
+                }
+
+                if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    IsNullable = true;
+                    type = type.GenericTypeArguments[0];
+                    return true;
+                }
+
+                if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                {
+                    IsDictionary = true;
+                    DictionaryKey = new TypeScriptType(type.GenericTypeArguments[0]);
+                    type = type.GenericTypeArguments[1];
+                    return true;
+                }
+
+                if (type.GetInterfaces().Where(i => i.IsGenericType).Select(i => i.GetGenericTypeDefinition()).Contains(typeof(IEnumerable<>)))
+                {
+                    IsArray = true;
+                    type = type.GenericTypeArguments[0];
+                    return true;
+                }
             }
 
             return false;
@@ -247,35 +250,6 @@ namespace TSCodegen
             return true;
         }
 
-        public string GetGenericTypeName()
-        {
-            var result = BaseTypeName;
-
-            if (IsClass && IsGeneric)
-            {
-                var generics = GenericArguments.Select(ga => ga.GetGenericTypeName()).ToArray();
-                result += $"<{string.Join(", ", generics)}>";
-            }
-
-            return result;
-        }
-
-        public string GetFullTypeName()
-        {
-            var result = GetGenericTypeName();
-
-            if (IsNullable)
-                result = $"{result} | null";
-
-            if (IsArray)
-                result = result.Contains('|') ? $"({result})[]" : $"{result}[]";
-
-            if (IsDictionary)
-                result = $"{{ [key: {DictionaryKey.BaseTypeName}]: {result} }}";
-
-            return result;
-        }
-
         public string GetOpenGenericTypeName()
         {
             var result = BaseTypeName;
@@ -285,6 +259,28 @@ namespace TSCodegen
                 var generics = OpenGenericArguments.Select(oga => oga.GetOpenGenericTypeName()).ToArray();
                 result += $"<{string.Join(", ", generics)}>";
             }
+
+            return result;
+        }
+
+        public string GetFullTypeName()
+        {
+            var result = BaseTypeName;
+
+            if (IsClass && IsGeneric)
+            {
+                var generics = GenericArguments.Select(ga => ga.GetFullTypeName()).ToArray();
+                result += $"<{string.Join(", ", generics)}>";
+            }
+
+            if (IsNullable)
+                result = $"{result} | null";
+
+            if (IsArray)
+                result = result.Contains('|') ? $"({result})[]" : $"{result}[]";
+
+            if (IsDictionary)
+                result = $"{{ [key: {DictionaryKey.BaseTypeName}]: {result} }}";
 
             return result;
         }
@@ -300,7 +296,7 @@ namespace TSCodegen
                 var declarationHeader = $"{typeName}";
 
                 if (HasParent)
-                    declarationHeader += $" extends {Parent.GetGenericTypeName()}";
+                    declarationHeader += $" extends {Parent.GetFullTypeName()}";
 
                 result.Add((export ? "export " : "") + $"interface {declarationHeader} {{");
 
