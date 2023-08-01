@@ -169,9 +169,9 @@ The output will be:
 
 ```TypeScript
 enum MyEnum {
-    foo = 1,
-    bar = 2,
-    baz = 4,
+    Foo = 1,
+    Bar = 2,
+    Baz = 4,
 }
 ```
 
