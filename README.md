@@ -65,7 +65,7 @@ public override string ToString() => GetFullTypeName();
 // Methods
 public TypeScriptType(Type type);
 public string GetFullTypeName();
-public List<string> GetDeclaration(int indentitationSize);
+public List<string> GetDeclaration(int indentitationSize, bool export = false);
 ```
 
 ### TypeScriptTypes
@@ -76,7 +76,7 @@ public List<TypeScriptType> Items { get; }
 // Methods
 public void Add(TypeScriptType typeScriptType);
 public void Add(IEnumerable<TypeScriptType> typeScriptTypes);
-public List<string> GetDeclarations(int indentitationSize);
+public List<string> GetDeclarations(int indentitationSize, bool export = false);
 ```
 
 <sub>\* The `Add` method of the `TypeScriptTypes` class will recursively add all related to the argument types.</sub>
@@ -153,6 +153,33 @@ interface IMyClass {
 ```C#
 using TSCodegen;
 
+var tsType = new TypeScriptType(typeof(MyEnum));
+var strings = tsType.GetDeclaration(4);
+Console.WriteLine(string.Join("\n", strings));
+
+enum MyEnum
+{
+    Foo = 1,
+    Bar = 2,
+    Baz = 4,
+}
+```
+
+The output will be:
+
+```TypeScript
+enum MyEnum {
+    foo = 1,
+    bar = 2,
+    baz = 4,
+}
+```
+
+## Example Application 5
+
+```C#
+using TSCodegen;
+
 var type = typeof(MyGenericClass<bool, int, string>);
 var tsType = new TypeScriptType(type);
 Console.WriteLine(tsType);
@@ -171,7 +198,7 @@ The output will be:
 IMyGenericClass<boolean, number, string>
 ```
 
-## Example Application 5
+## Example Application 6
 
 ```C#
 using TSCodegen;

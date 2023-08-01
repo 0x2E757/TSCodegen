@@ -269,7 +269,7 @@ namespace TSCodegen
             return result;
         }
 
-        public List<string> GetDeclaration(int indentitationSize)
+        public List<string> GetDeclaration(int indentitationSize, bool export = false)
         {
             var result = new List<string>();
             var indentitation = new string(' ', indentitationSize);
@@ -284,7 +284,7 @@ namespace TSCodegen
                     typeName += $"<{string.Join(", ", generics)}>";
                 }
 
-                var declarationHeader = $"{typeName}";
+                var declarationHeader = (export ? "export " : "") + $"{typeName}";
 
                 if (HasParent)
                 {

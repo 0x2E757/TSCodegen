@@ -39,14 +39,14 @@ namespace TSCodegen
                 Add(typeScriptType);
         }
 
-        public List<string> GetDeclarations(int indentitationSize)
+        public List<string> GetDeclarations(int indentitationSize, bool export = false)
         {
             var result = new List<string>();
 
             for (int n = 0; n < Items.Count; n++)
             {
                 var item = Items[n];
-                result.AddRange(item.GetDeclaration(indentitationSize));
+                result.AddRange(item.GetDeclaration(indentitationSize, export));
 
                 if (n < Items.Count - 1)
                     result.Add("");
