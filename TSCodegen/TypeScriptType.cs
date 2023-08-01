@@ -38,7 +38,7 @@ namespace TSCodegen
             if (type == null)
                 throw new ArgumentNullException();
 
-            while (ExtractBaseType(ref type))
+            while (TryExtractBaseType(ref type))
                 continue;
 
             CSharpType = type;
@@ -74,7 +74,7 @@ namespace TSCodegen
             }
         }
 
-        private bool ExtractBaseType(ref Type type)
+        private bool TryExtractBaseType(ref Type type)
         {
             if (type.IsArray)
             {
@@ -83,43 +83,38 @@ namespace TSCodegen
                 return true;
             }
 
-            if (type == typeof(Task))
+            if (type.Implements(typeof(Task)))
             {
-                IsNullable = true;
                 type = typeof(void);
                 return true;
             }
 
-            if (type.IsGenericType)
+            if (type.Implements(typeof(Task<>)))
             {
-                if (type.GetGenericTypeDefinition() == typeof(Task<>))
-                {
-                    IsNullable = true;
-                    type = type.GenericTypeArguments[0];
-                    return true;
-                }
+                type = type.GenericTypeArguments[0];
+                return true;
+            }
 
-                if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                {
-                    IsNullable = true;
-                    type = type.GenericTypeArguments[0];
-                    return true;
-                }
+            if (type.Implements(typeof(IDictionary<,>)))
+            {
+                IsDictionary = true;
+                DictionaryKey = new TypeScriptType(type.GenericTypeArguments[0]);
+                type = type.GenericTypeArguments[1];
+                return true;
+            }
 
-                if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
-                {
-                    IsDictionary = true;
-                    DictionaryKey = new TypeScriptType(type.GenericTypeArguments[0]);
-                    type = type.GenericTypeArguments[1];
-                    return true;
-                }
+            if (type.Implements(typeof(IEnumerable<>)))
+            {
+                IsArray = true;
+                type = type.GenericTypeArguments[0];
+                return true;
+            }
 
-                if (type.GetInterfaces().Where(i => i.IsGenericType).Select(i => i.GetGenericTypeDefinition()).Contains(typeof(IEnumerable<>)))
-                {
-                    IsArray = true;
-                    type = type.GenericTypeArguments[0];
-                    return true;
-                }
+            if (type.Implements(typeof(Nullable<>)))
+            {
+                IsNullable = true;
+                type = type.GenericTypeArguments[0];
+                return true;
             }
 
             return false;
@@ -256,7 +251,7 @@ namespace TSCodegen
 
             if (IsClass && IsGeneric)
             {
-                var generics = OpenGenericArguments.Select(oga => oga.GetOpenGenericTypeName()).ToArray();
+                var generics = OpenGenericArguments.Select(oga => oga.GetOpenGenericTypeName());
                 result += $"<{string.Join(", ", generics)}>";
             }
 
@@ -269,7 +264,7 @@ namespace TSCodegen
 
             if (IsClass && IsGeneric)
             {
-                var generics = GenericArguments.Select(ga => ga.GetFullTypeName()).ToArray();
+                var generics = GenericArguments.Select(ga => ga.GetFullTypeName());
                 result += $"<{string.Join(", ", generics)}>";
             }
 
@@ -312,7 +307,7 @@ namespace TSCodegen
                 result.Add((export ? "export " : "") + $"enum {BaseTypeName} {{");
 
                 foreach (var value in Values)
-                    result.Add(indentitation + $"{value.Key.ToCamelCase()} = {value.Value},");
+                    result.Add(indentitation + $"{value.Key} = {value.Value},");
 
                 result.Add($"}}");
             }

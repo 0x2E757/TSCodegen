@@ -15,6 +15,31 @@ namespace TSCodegen
             return result;
         }
 
+        public static bool Implements(this Type type, Type target)
+        {
+            if (type.IsGenericType == target.IsGenericType)
+                if (type.IsGenericType)
+                {
+                    if (type.GetGenericTypeDefinition() == target)
+                        return true;
+
+                    foreach (var typeInterface in type.GetInterfaces())
+                        if (typeInterface.IsGenericType && typeInterface.GetGenericTypeDefinition() == target)
+                            return true;
+                }
+                else
+                {
+                    if (type == target)
+                        return true;
+
+                    foreach (var typeInterface in type.GetInterfaces())
+                        if (typeInterface == target)
+                            return true;
+                }
+
+            return false;
+        }
+
         public static string ToCamelCase(this string value)
         {
             if (string.IsNullOrEmpty(value))
