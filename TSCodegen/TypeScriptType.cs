@@ -247,15 +247,22 @@ namespace TSCodegen
             return true;
         }
 
-        public string GetFullTypeName()
+        public string GetGenericTypeName()
         {
             var result = BaseTypeName;
 
             if (IsClass && IsGeneric)
             {
-                var generics = GenericArguments.Select(oga => oga.BaseTypeName).ToArray();
+                var generics = GenericArguments.Select(ga => ga.GetGenericTypeName()).ToArray();
                 result += $"<{string.Join(", ", generics)}>";
             }
+
+            return result;
+        }
+
+        public string GetFullTypeName()
+        {
+            var result = GetGenericTypeName();
 
             if (IsNullable)
                 result = $"{result} | null";
@@ -269,6 +276,19 @@ namespace TSCodegen
             return result;
         }
 
+        public string GetOpenGenericTypeName()
+        {
+            var result = BaseTypeName;
+
+            if (IsClass && IsGeneric)
+            {
+                var generics = OpenGenericArguments.Select(oga => oga.GetOpenGenericTypeName()).ToArray();
+                result += $"<{string.Join(", ", generics)}>";
+            }
+
+            return result;
+        }
+
         public List<string> GetDeclaration(int indentitationSize, bool export = false)
         {
             var result = new List<string>();
@@ -276,26 +296,11 @@ namespace TSCodegen
 
             if (IsClass)
             {
-                var typeName = BaseTypeName;
-
-                if (IsClass && IsGeneric)
-                {
-                    var generics = OpenGenericArguments.Select(oga => oga.BaseTypeName).ToArray();
-                    typeName += $"<{string.Join(", ", generics)}>";
-                }
-
+                var typeName = GetOpenGenericTypeName();
                 var declarationHeader = $"{typeName}";
 
                 if (HasParent)
-                {
-                    declarationHeader += $" extends {Parent.BaseTypeName}";
-
-                    if (Parent.IsGeneric)
-                    {
-                        var generics = Parent.GenericArguments.Select(ga => ga.BaseTypeName).ToArray();
-                        declarationHeader += $"<{string.Join(", ", generics)}>";
-                    }
-                }
+                    declarationHeader += $" extends {Parent.GetGenericTypeName()}";
 
                 result.Add((export ? "export " : "") + $"interface {declarationHeader} {{");
 
