@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSCodegen", "TSCodegen\TSCodegen.csproj", "{BFD1C432-444B-49A8-9BBE-3428847EBCB0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSCodegen.Tests", "TSCodegen.Tests\TSCodegen.Tests.csproj", "{5E921D61-ECCD-4FDA-92B7-A5DC8553B3C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{BFD1C432-444B-49A8-9BBE-3428847EBCB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFD1C432-444B-49A8-9BBE-3428847EBCB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFD1C432-444B-49A8-9BBE-3428847EBCB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E921D61-ECCD-4FDA-92B7-A5DC8553B3C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E921D61-ECCD-4FDA-92B7-A5DC8553B3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E921D61-ECCD-4FDA-92B7-A5DC8553B3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E921D61-ECCD-4FDA-92B7-A5DC8553B3C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
