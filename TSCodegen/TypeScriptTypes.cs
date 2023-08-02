@@ -9,14 +9,15 @@ namespace TSCodegen
 
         public void Add(TypeScriptType typeScriptType)
         {
-            foreach (var item in Items)
-                if (typeScriptType.BaseTypeName == item.BaseTypeName)
-                {
-                    if (typeScriptType.CSharpType.Namespace != item.CSharpType.Namespace)
-                        throw new Exception("Different types with same name are not allowed.");
+            if (typeScriptType.HasDeclaration)
+                foreach (var item in Items)
+                    if (typeScriptType.BaseTypeName == item.BaseTypeName)
+                    {
+                        if (typeScriptType.CSharpType.Namespace != item.CSharpType.Namespace)
+                            throw new Exception("Different types with same name are not allowed.");
 
-                    return;
-                }
+                        return;
+                    }
 
             foreach (var property in typeScriptType.Properties)
                 if (!property.Value.CSharpType.IsGenericParameter)
@@ -28,6 +29,9 @@ namespace TSCodegen
 
             if (typeScriptType.HasParent)
                 Add(typeScriptType.Parent);
+
+            if (typeScriptType.HasElement)
+                Add(typeScriptType.Element);
 
             if (typeScriptType.HasDeclaration)
                 Items.Add(typeScriptType);

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -20,6 +19,7 @@ namespace TSCodegen
         public bool IsNullable { get; private set; } = false;
 
         public TypeScriptType Parent { get; private set; } = null;
+        public TypeScriptType Element { get; private set; } = null;
         public TypeScriptType DictionaryKey { get; private set; } = null;
         public List<TypeScriptType> GenericArguments { get; private set; } = new List<TypeScriptType>();
         public List<TypeScriptType> OpenGenericArguments { get; private set; } = new List<TypeScriptType>();
@@ -29,6 +29,7 @@ namespace TSCodegen
         public Type CSharpType { get; } = default;
 
         public bool HasParent => Parent != null;
+        public bool HasElement => Element != null;
         public bool IsGeneric => GenericArguments.Count > 0;
         public bool HasDeclaration => IsEnum || IsClass;
         public override string ToString() => GetFullTypeName();
@@ -39,7 +40,8 @@ namespace TSCodegen
                 throw new ArgumentNullException();
 
             while (TryExtractBaseType(ref type))
-                continue;
+                if (IsArray || IsDictionary)
+                    return;
 
             CSharpType = type;
 
@@ -79,7 +81,7 @@ namespace TSCodegen
             if (type.IsArray)
             {
                 IsArray = true;
-                type = type.GetElementType();
+                Element = new TypeScriptType(type.GetElementType());
                 return true;
             }
 
@@ -99,14 +101,14 @@ namespace TSCodegen
             {
                 IsDictionary = true;
                 DictionaryKey = new TypeScriptType(type.GenericTypeArguments[0]);
-                type = type.GenericTypeArguments[1];
+                Element = new TypeScriptType(type.GenericTypeArguments[1]);
                 return true;
             }
 
             if (type.Implements(typeof(IEnumerable<>)))
             {
                 IsArray = true;
-                type = type.GenericTypeArguments[0];
+                Element = new TypeScriptType(type.GenericTypeArguments[0]);
                 return true;
             }
 
@@ -184,7 +186,6 @@ namespace TSCodegen
                 case Type @float when @float == typeof(float):
                 case Type @double when @double == typeof(double):
                 case Type @decimal when @decimal == typeof(decimal):
-                case Type @bigint when @bigint == typeof(BigInteger):
                     BaseTypeName = "number";
                     return true;
 
@@ -260,7 +261,7 @@ namespace TSCodegen
 
         public string GetFullTypeName()
         {
-            var result = BaseTypeName;
+            var result = Element?.GetFullTypeName() ?? BaseTypeName;
 
             if (IsClass && IsGeneric)
             {
@@ -299,7 +300,10 @@ namespace TSCodegen
                     if (!HasParent || !Parent.Properties.ContainsKey(property.Key))
                         result.Add(indentitation + $"{property.Key.ToCamelCase()}: {property.Value.GetFullTypeName()};");
 
-                result.Add($"}}");
+                if (result.Count == 1)
+                    result[0] += $"}}";
+                else
+                    result.Add($"}}");
             }
 
             if (IsEnum)
