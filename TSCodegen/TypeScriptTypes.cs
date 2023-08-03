@@ -6,6 +6,13 @@ namespace TSCodegen
     public class TypeScriptTypes
     {
         public List<TypeScriptType> Items { get; } = new List<TypeScriptType>();
+        public List<string> ForbiddenNamespaces { get; } = new List<string>();
+
+        public TypeScriptTypes(List<string> forbiddenNamespaces = null)
+        {
+            if (forbiddenNamespaces != null)
+                ForbiddenNamespaces.AddRange(forbiddenNamespaces);
+        }
 
         public void Add(TypeScriptType typeScriptType)
         {
@@ -34,7 +41,12 @@ namespace TSCodegen
                 Add(typeScriptType.Element);
 
             if (typeScriptType.HasDeclaration)
+            {
+                if (ForbiddenNamespaces.Contains(typeScriptType.CSharpType.Namespace))
+                    throw new Exception($"Namespace {typeScriptType.CSharpType.Namespace} entities are forbidden ({typeScriptType.CSharpType.Name})!");
+
                 Items.Add(typeScriptType);
+            }
         }
 
         public void Add(IEnumerable<TypeScriptType> typeScriptTypes)
