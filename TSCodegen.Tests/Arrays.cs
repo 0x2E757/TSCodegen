@@ -175,9 +175,9 @@ namespace TSCodegen.Tests
             var tsTypeList = new TypeScriptType(typeof(List<IDictionary<int, int>>));
             var tsTypeIEnumerable = new TypeScriptType(typeof(IEnumerable<IDictionary<int, int>>));
 
-            Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("{ [key: number]: number }[]"));
-            Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("{ [key: number]: number }[]"));
-            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("{ [key: number]: number }[]"));
+            Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("Record<number, number>[]"));
+            Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("Record<number, number>[]"));
+            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("Record<number, number>[]"));
         }
 
         [Test]

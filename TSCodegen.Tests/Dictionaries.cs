@@ -11,9 +11,9 @@ namespace TSCodegen.Tests
             var tsTypeNumberKey = new TypeScriptType(typeof(Dictionary<int, int>));
             var tsTypeStringKey = new TypeScriptType(typeof(Dictionary<string, int>));
 
-            Assert.That(tsTypeBooleanKey.GetFullTypeName(), Is.EqualTo("{ [key: boolean]: number }"));
-            Assert.That(tsTypeNumberKey.GetFullTypeName(), Is.EqualTo("{ [key: number]: number }"));
-            Assert.That(tsTypeStringKey.GetFullTypeName(), Is.EqualTo("{ [key: string]: number }"));
+            Assert.That(tsTypeBooleanKey.GetFullTypeName(), Is.EqualTo("Record<boolean, number>"));
+            Assert.That(tsTypeNumberKey.GetFullTypeName(), Is.EqualTo("Record<number, number>"));
+            Assert.That(tsTypeStringKey.GetFullTypeName(), Is.EqualTo("Record<string, number>"));
         }
 
         [Test]
@@ -23,23 +23,23 @@ namespace TSCodegen.Tests
             var tsTypeNumber = new TypeScriptType(typeof(Dictionary<int, int>));
             var tsTypeString = new TypeScriptType(typeof(Dictionary<int, string>));
 
-            Assert.That(tsTypeBoolean.GetFullTypeName(), Is.EqualTo("{ [key: number]: boolean }"));
-            Assert.That(tsTypeNumber.GetFullTypeName(), Is.EqualTo("{ [key: number]: number }"));
-            Assert.That(tsTypeString.GetFullTypeName(), Is.EqualTo("{ [key: number]: string }"));
+            Assert.That(tsTypeBoolean.GetFullTypeName(), Is.EqualTo("Record<number, boolean>"));
+            Assert.That(tsTypeNumber.GetFullTypeName(), Is.EqualTo("Record<number, number>"));
+            Assert.That(tsTypeString.GetFullTypeName(), Is.EqualTo("Record<number, string>"));
 
             var tsTypeBooleanArray = new TypeScriptType(typeof(Dictionary<int, bool[]>));
             var tsTypeNumberArray = new TypeScriptType(typeof(Dictionary<int, int[]>));
             var tsTypeStringArray = new TypeScriptType(typeof(Dictionary<int, string[]>));
 
-            Assert.That(tsTypeBooleanArray.GetFullTypeName(), Is.EqualTo("{ [key: number]: boolean[] }"));
-            Assert.That(tsTypeNumberArray.GetFullTypeName(), Is.EqualTo("{ [key: number]: number[] }"));
-            Assert.That(tsTypeStringArray.GetFullTypeName(), Is.EqualTo("{ [key: number]: string[] }"));
+            Assert.That(tsTypeBooleanArray.GetFullTypeName(), Is.EqualTo("Record<number, boolean[]>"));
+            Assert.That(tsTypeNumberArray.GetFullTypeName(), Is.EqualTo("Record<number, number[]>"));
+            Assert.That(tsTypeStringArray.GetFullTypeName(), Is.EqualTo("Record<number, string[]>"));
 
             var tsTypeBooleanNullable = new TypeScriptType(typeof(Dictionary<int, bool?>));
             var tsTypeNumberNullable = new TypeScriptType(typeof(Dictionary<int, int?>));
 
-            Assert.That(tsTypeBooleanNullable.GetFullTypeName(), Is.EqualTo("{ [key: number]: boolean | null }"));
-            Assert.That(tsTypeNumberNullable.GetFullTypeName(), Is.EqualTo("{ [key: number]: number | null }"));
+            Assert.That(tsTypeBooleanNullable.GetFullTypeName(), Is.EqualTo("Record<number, boolean | null>"));
+            Assert.That(tsTypeNumberNullable.GetFullTypeName(), Is.EqualTo("Record<number, number | null>"));
         }
 
         [Test]
@@ -54,14 +54,14 @@ namespace TSCodegen.Tests
             var tsTypeGenericClass = new TypeScriptType(typeof(Dictionary<int, Classes.GenericClass<int>>));
             var tsTypeEnum = new TypeScriptType(typeof(Dictionary<int, Classes.Enum>));
 
-            Assert.That(tsTypeDateTime.GetFullTypeName(), Is.EqualTo("{ [key: number]: Date | DateTimeString }"));
-            Assert.That(tsTypeTimeSpan.GetFullTypeName(), Is.EqualTo("{ [key: number]: TimeString }"));
-            Assert.That(tsTypeIFormFile.GetFullTypeName(), Is.EqualTo("{ [key: number]: File }"));
-            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("{ [key: number]: number[] }"));
-            Assert.That(tsTypeIDictionary.GetFullTypeName(), Is.EqualTo("{ [key: number]: { [key: number]: number } }"));
-            Assert.That(tsTypeClass.GetFullTypeName(), Is.EqualTo("{ [key: number]: IClass }"));
-            Assert.That(tsTypeGenericClass.GetFullTypeName(), Is.EqualTo("{ [key: number]: IGenericClass<number> }"));
-            Assert.That(tsTypeEnum.GetFullTypeName(), Is.EqualTo("{ [key: number]: Enum }"));
+            Assert.That(tsTypeDateTime.GetFullTypeName(), Is.EqualTo("Record<number, Date | DateTimeString>"));
+            Assert.That(tsTypeTimeSpan.GetFullTypeName(), Is.EqualTo("Record<number, TimeString>"));
+            Assert.That(tsTypeIFormFile.GetFullTypeName(), Is.EqualTo("Record<number, File>"));
+            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("Record<number, number[]>"));
+            Assert.That(tsTypeIDictionary.GetFullTypeName(), Is.EqualTo("Record<number, Record<number, number>>"));
+            Assert.That(tsTypeClass.GetFullTypeName(), Is.EqualTo("Record<number, IClass>"));
+            Assert.That(tsTypeGenericClass.GetFullTypeName(), Is.EqualTo("Record<number, IGenericClass<number>>"));
+            Assert.That(tsTypeEnum.GetFullTypeName(), Is.EqualTo("Record<number, Enum>"));
         }
     }
 }

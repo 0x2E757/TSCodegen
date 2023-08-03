@@ -62,8 +62,8 @@ namespace TSCodegen.Tests
             var tsTypeDictionary = new TypeScriptType(typeof(Dictionary<int, int>));
             var tsTypeIDictionary = new TypeScriptType(typeof(IDictionary<int, int>));
 
-            Assert.That(tsTypeDictionary.GetFullTypeName(), Is.EqualTo("{ [key: number]: number }"));
-            Assert.That(tsTypeIDictionary.GetFullTypeName(), Is.EqualTo("{ [key: number]: number }"));
+            Assert.That(tsTypeDictionary.GetFullTypeName(), Is.EqualTo("Record<number, number>"));
+            Assert.That(tsTypeIDictionary.GetFullTypeName(), Is.EqualTo("Record<number, number>"));
         }
     }
 }
