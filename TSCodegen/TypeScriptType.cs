@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace TSCodegen
         public Dictionary<string, string> Values { get; private set; } = new Dictionary<string, string>();
         public Dictionary<string, TypeScriptType> Properties { get; private set; } = new Dictionary<string, TypeScriptType>();
 
-        public Type CSharpType { get; } = default;
+        public Type CSharpType { get; private set; } = default;
 
         public bool HasParent => Parent != null;
         public bool HasElement => Element != null;
@@ -39,122 +39,122 @@ namespace TSCodegen
             if (type == null)
                 throw new ArgumentNullException();
 
-            while (TryExtractBaseType(ref type))
+            CSharpType = type;
+
+            while (TryExtractBaseType())
                 if (IsArray || IsDictionary)
                     return;
 
-            CSharpType = type;
-
-            if (type.IsGenericType)
+            if (CSharpType.IsGenericType)
             {
-                foreach (var genericArgument in type.GetGenericArguments())
+                foreach (var genericArgument in CSharpType.GetGenericArguments())
                     GenericArguments.Add(new TypeScriptType(genericArgument));
 
-                foreach (var genericArgument in type.GetGenericTypeDefinition().GetGenericArguments())
+                foreach (var genericArgument in CSharpType.GetGenericTypeDefinition().GetGenericArguments())
                     OpenGenericArguments.Add(new TypeScriptType(genericArgument));
             }
 
-            if (Initialize(type))
+            if (Initialize())
                 return;
 
-            if (InitializeAsPrimitive(type))
+            if (InitializeAsPrimitive())
             {
                 IsPrimitive = true;
                 return;
             }
 
-            if (type.IsClass && InitializeAsClass(type))
+            if (CSharpType.IsClass && InitializeAsClass())
             {
                 IsClass = true;
                 return;
             }
 
-            if (type.IsEnum && InitializeAsEnum(type))
+            if (CSharpType.IsEnum && InitializeAsEnum())
             {
                 IsEnum = true;
                 return;
             }
         }
 
-        private bool TryExtractBaseType(ref Type type)
+        private bool TryExtractBaseType()
         {
-            if (type.IsArray)
+            if (CSharpType.IsArray)
             {
                 IsArray = true;
-                Element = new TypeScriptType(type.GetElementType());
+                Element = new TypeScriptType(CSharpType.GetElementType());
                 return true;
             }
 
-            if (type.Implements(typeof(Task)))
+            if (CSharpType.Implements(typeof(Task)))
             {
-                type = typeof(void);
+                CSharpType = typeof(void);
                 return true;
             }
 
-            if (type.Implements(typeof(Task<>)))
+            if (CSharpType.Implements(typeof(Task<>)))
             {
-                type = type.GenericTypeArguments[0];
+                CSharpType = CSharpType.GenericTypeArguments[0];
                 return true;
             }
 
-            if (type.Implements(typeof(IDictionary<,>)))
+            if (CSharpType.Implements(typeof(IDictionary<,>)))
             {
                 IsDictionary = true;
-                DictionaryKey = new TypeScriptType(type.GenericTypeArguments[0]);
-                Element = new TypeScriptType(type.GenericTypeArguments[1]);
+                DictionaryKey = new TypeScriptType(CSharpType.GenericTypeArguments[0]);
+                Element = new TypeScriptType(CSharpType.GenericTypeArguments[1]);
                 return true;
             }
 
-            if (type.Implements(typeof(IEnumerable<>)))
+            if (CSharpType.Implements(typeof(IEnumerable<>)))
             {
                 IsArray = true;
-                Element = new TypeScriptType(type.GenericTypeArguments[0]);
+                Element = new TypeScriptType(CSharpType.GenericTypeArguments[0]);
                 return true;
             }
 
-            if (type.Implements(typeof(Nullable<>)))
+            if (CSharpType.Implements(typeof(Nullable<>)))
             {
                 IsNullable = true;
-                type = type.GenericTypeArguments[0];
+                CSharpType = CSharpType.GenericTypeArguments[0];
                 return true;
             }
 
             return false;
         }
 
-        private bool Initialize(Type type)
+        private bool Initialize()
         {
-            if (type == typeof(DateTime))
+            if (CSharpType == typeof(DateTime))
             {
                 BaseTypeName = "Date | DateTimeString";
                 return true;
             }
 
-            if (type == typeof(TimeSpan))
+            if (CSharpType == typeof(TimeSpan))
             {
                 BaseTypeName = "TimeString";
                 return true;
             }
 
-            if (type == typeof(IFormFile))
+            if (CSharpType == typeof(IFormFile))
             {
                 BaseTypeName = "File";
                 return true;
             }
 
-            if (type == typeof(IActionResult))
+            if (CSharpType == typeof(IActionResult))
             {
                 BaseTypeName = "any";
                 return true;
             }
 
-            if (type == typeof(IHttpActionResult))
+            if (CSharpType == typeof(IHttpActionResult))
             {
                 BaseTypeName = "any";
                 return true;
             }
 
-            if (type == typeof(object))
+            if (CSharpType == typeof(object))
             {
                 BaseTypeName = "any";
                 return true;
@@ -163,9 +163,9 @@ namespace TSCodegen
             return false;
         }
 
-        private bool InitializeAsPrimitive(Type type)
+        private bool InitializeAsPrimitive()
         {
-            switch (type)
+            switch (CSharpType)
             {
                 case Type @void when @void == typeof(void):
                     BaseTypeName = "void";
@@ -198,43 +198,43 @@ namespace TSCodegen
             return false;
         }
 
-        private bool InitializeAsClass(Type type)
+        private bool InitializeAsClass()
         {
-            BaseTypeName = (type.IsGenericParameter ? "" : "I") + type.GetNameWithoutGenericArity();
+            BaseTypeName = (CSharpType.IsGenericParameter ? "" : "I") + CSharpType.GetNameWithoutGenericArity();
 
-            if (type.IsGenericType)
-                type = type.GetGenericTypeDefinition();
+            if (CSharpType.IsGenericType)
+                CSharpType = CSharpType.GetGenericTypeDefinition();
 
-            foreach (var field in type.GetFields())
+            foreach (var field in CSharpType.GetFields())
             {
                 if (Properties.ContainsKey(field.Name))
-                    throw new Exception($"Classes with redeclared inherited fields are not allowed ({type.GetNameWithoutGenericArity()}.{field.Name}).");
+                    throw new Exception($"Classes with redeclared inherited fields are not allowed ({CSharpType.GetNameWithoutGenericArity()}.{field.Name}).");
 
                 Properties.Add(field.Name, new TypeScriptType(field.FieldType));
             }
 
-            foreach (var property in type.GetProperties())
+            foreach (var property in CSharpType.GetProperties())
             {
                 if (Properties.ContainsKey(property.Name))
-                    throw new Exception($"Classes with redeclared inherited properties are not allowed ({type.GetNameWithoutGenericArity()}.{property.Name}).");
+                    throw new Exception($"Classes with redeclared inherited properties are not allowed ({CSharpType.GetNameWithoutGenericArity()}.{property.Name}).");
 
                 Properties.Add(property.Name, new TypeScriptType(property.PropertyType));
             }
 
-            if (type.BaseType != typeof(object))
-                Parent = new TypeScriptType(type.BaseType);
+            if (CSharpType.BaseType != typeof(object))
+                Parent = new TypeScriptType(CSharpType.BaseType);
 
             return true;
         }
 
-        private bool InitializeAsEnum(Type type)
+        private bool InitializeAsEnum()
         {
-            BaseTypeName = type.Name;
+            BaseTypeName = CSharpType.Name;
 
-            foreach (var value in type.GetEnumValues())
+            foreach (var value in CSharpType.GetEnumValues())
             {
-                var enumType = Enum.GetUnderlyingType(type);
-                var itemName = Enum.GetName(type, value);
+                var enumType = Enum.GetUnderlyingType(CSharpType);
+                var itemName = Enum.GetName(CSharpType, value);
                 var itemValue = Convert.ChangeType(value, enumType).ToString();
 
                 if (itemName == null || itemValue == null)
