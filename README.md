@@ -23,7 +23,7 @@ Conversion table:
 Generic types:
 
 - Array\<T\> / IEnumerable\<T\> → `T[]`
-- Dictionary\<T, U\> → `{ [key: T]: U }`
+- Dictionary\<T, U\> → `Record<T, U>`
 - Nullable\<T\> → `T | null`
 - Task\<T\> → `T`
 

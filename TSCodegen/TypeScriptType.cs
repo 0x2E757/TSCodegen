@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -276,7 +276,7 @@ namespace TSCodegen
                 result = result.Contains('|') ? $"({result})[]" : $"{result}[]";
 
             if (IsDictionary)
-                result = $"{{ [key: {DictionaryKey.BaseTypeName}]: {result} }}";
+                result = $"Record<{DictionaryKey.BaseTypeName}, {result}>";
 
             return result;
         }
