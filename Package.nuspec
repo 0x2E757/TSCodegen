@@ -9,7 +9,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <repository type="git" url="https://github.com/0x2E757/TSCodegen.git" branch="main" />
     <projectUrl>https://github.com/0x2E757/TSCodegen</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/0x2E757/TSCodegen/main/icon.png</iconUrl>
+    <readme>README.md</readme>
+    <icon>icon.png</icon>
     <description>Library for C# to TypeScript type conversion</description>
     <copyright>Copyright 2023</copyright>
     <tags>tscodegen codegen code generation generator c# csharp sharp ts typescript type types declaration declarations interfaces enums</tags>
@@ -24,5 +25,7 @@
   <files>
     <file src="TSCodegen\bin\Release\**\*.dll" target="lib" />
     <file src="TSCodegen\bin\Release\**\*.pdb" target="lib" />
+    <file src="README.md" />
+    <file src="icon.png" />
   </files>
 </package>
