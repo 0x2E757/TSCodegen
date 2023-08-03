@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TSCodegen</id>
-    <version>1.4.3</version>
+    <version>1.5.0</version>
     <authors>0x2E757</authors>
     <owners>0x2E757</owners>
     <license type="expression">MIT</license>
