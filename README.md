@@ -50,20 +50,23 @@ public bool IsDictionary { get; private set; }
 public bool IsNullable { get; private set; }
 // Additional properties
 public TypeScriptType Parent { get; private set; }
+public TypeScriptType Element { get; private set; }
 public TypeScriptType DictionaryKey { get; private set; }
 public List<TypeScriptType> GenericArguments { get; private set; }
 public List<TypeScriptType> OpenGenericArguments { get; private set; }
 public Dictionary<string, string> Values { get; private set; }
 public Dictionary<string, TypeScriptType> Properties { get; private set; }
 // Constructor argument
-public Type CSharpType { get; }
+public Type CSharpType { get; private set; }
 // Helpers
 public bool HasParent => Parent != null;
+public bool HasElement => Element != null;
 public bool IsGeneric => GenericArguments.Count > 0;
 public bool HasDeclaration => IsEnum || IsClass;
 public override string ToString() => GetFullTypeName();
 // Methods
 public TypeScriptType(Type type);
+public string GetOpenGenericTypeName();
 public string GetFullTypeName();
 public List<string> GetDeclaration(int indentationSize, bool export = false);
 ```
