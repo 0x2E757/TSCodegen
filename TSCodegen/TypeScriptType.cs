@@ -281,10 +281,10 @@ namespace TSCodegen
             return result;
         }
 
-        public List<string> GetDeclaration(int indentitationSize, bool export = false)
+        public List<string> GetDeclaration(int indentationSize, bool export = false)
         {
             var result = new List<string>();
-            var indentitation = new string(' ', indentitationSize);
+            var indentation = new string(' ', indentationSize);
 
             if (IsClass)
             {
@@ -298,7 +298,7 @@ namespace TSCodegen
 
                 foreach (var property in Properties)
                     if (!HasParent || !Parent.Properties.ContainsKey(property.Key))
-                        result.Add(indentitation + $"{property.Key.ToCamelCase()}: {property.Value.GetFullTypeName()};");
+                        result.Add(indentation + $"{property.Key.ToCamelCase()}: {property.Value.GetFullTypeName()};");
 
                 if (result.Count == 1)
                     result[0] += $"}}";
@@ -311,7 +311,7 @@ namespace TSCodegen
                 result.Add((export ? "export " : "") + $"enum {BaseTypeName} {{");
 
                 foreach (var value in Values)
-                    result.Add(indentitation + $"{value.Key} = {value.Value},");
+                    result.Add(indentation + $"{value.Key} = {value.Value},");
 
                 result.Add($"}}");
             }

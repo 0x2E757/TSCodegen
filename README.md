@@ -65,7 +65,7 @@ public override string ToString() => GetFullTypeName();
 // Methods
 public TypeScriptType(Type type);
 public string GetFullTypeName();
-public List<string> GetDeclaration(int indentitationSize, bool export = false);
+public List<string> GetDeclaration(int indentationSize, bool export = false);
 ```
 
 ### TypeScriptTypes
@@ -76,10 +76,10 @@ public List<TypeScriptType> Items { get; }
 // Methods
 public void Add(TypeScriptType typeScriptType);
 public void Add(IEnumerable<TypeScriptType> typeScriptTypes);
-public List<string> GetDeclarations(int indentitationSize, bool export = false);
+public List<string> GetDeclarations(int indentationSize, bool export = false);
 ```
 
-<sub>\* The `Add` method of the `TypeScriptTypes` class will recursively add all related to the argument types.</sub>
+<sub>\* The `Add` method will recursively add all related to the argument types.</sub>
 
 ## Example Application 1
 
