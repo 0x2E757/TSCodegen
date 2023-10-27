@@ -38,7 +38,8 @@ namespace TSCodegen
                 Add(typeScriptType.Parent);
 
             if (typeScriptType.HasElement)
-                Add(typeScriptType.Element);
+                if (!typeScriptType.Element.CSharpType.IsGenericParameter)
+                    Add(typeScriptType.Element);
 
             if (typeScriptType.HasDeclaration)
             {
