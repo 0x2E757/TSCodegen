@@ -16,6 +16,8 @@ namespace TSCodegen
 
         public void Add(TypeScriptType typeScriptType)
         {
+            var typeIsPresent = false;
+
             if (typeScriptType.HasDeclaration)
                 foreach (var item in Items)
                     if (typeScriptType.BaseTypeName == item.BaseTypeName)
@@ -23,7 +25,8 @@ namespace TSCodegen
                         if (typeScriptType.CSharpType.Namespace != item.CSharpType.Namespace)
                             throw new Exception("Different types with same name are not allowed.");
 
-                        return;
+                        typeIsPresent = true;
+                        break;
                     }
 
             foreach (var property in typeScriptType.Properties)
@@ -46,7 +49,8 @@ namespace TSCodegen
                 if (ForbiddenNamespaces.Contains(typeScriptType.CSharpType.Namespace))
                     throw new Exception($"Namespace {typeScriptType.CSharpType.Namespace} entities are forbidden ({typeScriptType.CSharpType.Name})!");
 
-                Items.Add(typeScriptType);
+                if (!typeIsPresent)
+                    Items.Add(typeScriptType);
             }
         }
 
