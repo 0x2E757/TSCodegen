@@ -113,6 +113,24 @@
         }
 
         [Test]
+        public void GenericClassWithProperties()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Classes.GenericClassWithProperties<>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IGenericClassWithProperties<T> {",
+                "    arrayProperty: T[];",
+                "}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
         public void ChildGenericClassA1()
         {
             var tsTypes = new TypeScriptTypes();
@@ -261,6 +279,33 @@
                 "}",
                 "",
                 "interface IChildGenericClassC2<T, U, V> extends IGenericClassC<IClass, IGenericClass<U>, Enum> {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void GenericClassWithDifferentArguments()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Classes.GenericClassB<Classes.GenericClassA<Classes.ClassA>, Classes.GenericClassA<Classes.ClassB>>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IClassA {}",
+                "",
+                "interface IGenericClassA<T> {",
+                "    propertyA: T;",
+                "}",
+                "",
+                "interface IClassB {}",
+                "",
+                "interface IGenericClassB<T, U> {",
+                "    propertyB1: T;",
+                "    propertyB2: U;",
+                "}",
             };
 
             Assert.That(declarations, Has.Count.EqualTo(target.Count));
