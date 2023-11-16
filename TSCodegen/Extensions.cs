@@ -1,9 +1,27 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 
 namespace TSCodegen
 {
     internal static class Extensions
     {
+        public static FieldInfo GetFieldLastOverride(this Type type, string name)
+        {
+            var instanceFields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var result = instanceFields.First(field => field.Name == name);
+
+            return result ?? type.BaseType.GetFieldLastOverride(name);
+        }
+
+        public static PropertyInfo GetPropertyLastOverride(this Type type, string name)
+        {
+            var instanceProperties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var result = instanceProperties.First(property => property.Name == name);
+
+            return result ?? type.BaseType.GetPropertyLastOverride(name);
+        }
+
         public static string GetNameWithoutGenericArity(this Type type)
         {
             var result = type.Name;

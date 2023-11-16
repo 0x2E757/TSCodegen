@@ -17,6 +17,7 @@ namespace TSCodegen
         public bool IsArray { get; private set; } = false;
         public bool IsDictionary { get; private set; } = false;
         public bool IsNullable { get; private set; } = false;
+        public bool HasOverrides { get; private set; } = false;
 
         public TypeScriptType Parent { get; private set; } = null;
         public TypeScriptType Element { get; private set; } = null;
@@ -208,17 +209,25 @@ namespace TSCodegen
             foreach (var field in CSharpType.GetFields())
             {
                 if (Properties.ContainsKey(field.Name))
-                    throw new Exception($"Classes with redeclared inherited fields are not allowed ({CSharpType.GetNameWithoutGenericArity()}.{field.Name}).");
-
-                Properties.Add(field.Name, new TypeScriptType(field.FieldType));
+                {
+                    var fieldLastOverride = CSharpType.GetFieldLastOverride(field.Name);
+                    Properties[field.Name] = new TypeScriptType(fieldLastOverride.FieldType);
+                    HasOverrides = true;
+                }
+                else
+                    Properties.Add(field.Name, new TypeScriptType(field.FieldType));
             }
 
             foreach (var property in CSharpType.GetProperties())
             {
                 if (Properties.ContainsKey(property.Name))
-                    throw new Exception($"Classes with redeclared inherited properties are not allowed ({CSharpType.GetNameWithoutGenericArity()}.{property.Name}).");
-
-                Properties.Add(property.Name, new TypeScriptType(property.PropertyType));
+                {
+                    var propertyLastOverride = CSharpType.GetPropertyLastOverride(property.Name);
+                    Properties[property.Name] = new TypeScriptType(propertyLastOverride.PropertyType);
+                    HasOverrides = true;
+                }
+                else
+                    Properties.Add(property.Name, new TypeScriptType(property.PropertyType));
             }
 
             if (CSharpType.BaseType != typeof(object))
@@ -288,16 +297,19 @@ namespace TSCodegen
 
             if (IsClass)
             {
+                if (HasOverrides)
+                    result.Add($"// Inheritance replaced with expanded items as some of them were overridden");
+
                 var typeName = GetOpenGenericTypeName();
                 var declarationHeader = $"{typeName}";
 
-                if (HasParent)
+                if (HasParent && !HasOverrides)
                     declarationHeader += $" extends {Parent.GetFullTypeName()}";
 
                 result.Add((export ? "export " : "") + $"interface {declarationHeader} {{");
 
                 foreach (var property in Properties)
-                    if (!HasParent || !Parent.Properties.ContainsKey(property.Key))
+                    if (HasOverrides || !HasParent || !Parent.Properties.ContainsKey(property.Key))
                         result.Add(indentation + $"{property.Key.ToCamelCase()}: {property.Value.GetFullTypeName()};");
 
                 if (result.Count == 1)
