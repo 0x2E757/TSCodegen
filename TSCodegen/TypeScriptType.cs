@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace TSCodegen
 {
@@ -144,12 +143,6 @@ namespace TSCodegen
             }
 
             if (CSharpType == typeof(IActionResult))
-            {
-                BaseTypeName = "any";
-                return true;
-            }
-
-            if (CSharpType == typeof(IHttpActionResult))
             {
                 BaseTypeName = "any";
                 return true;

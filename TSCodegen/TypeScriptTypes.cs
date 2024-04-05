@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TSCodegen.Exceptions;
 
 namespace TSCodegen
 {
@@ -14,7 +15,7 @@ namespace TSCodegen
                 ForbiddenNamespaces.AddRange(forbiddenNamespaces);
         }
 
-        public void Add(TypeScriptType typeScriptType)
+        public void Add(TypeScriptType typeScriptType, bool suppressErrors = false)
         {
             var typeIsPresent = false;
 
@@ -23,7 +24,7 @@ namespace TSCodegen
                     if (typeScriptType.BaseTypeName == item.BaseTypeName)
                     {
                         if (typeScriptType.CSharpType.Namespace != item.CSharpType.Namespace)
-                            throw new Exception("Different types with same name are not allowed.");
+                            throw new SameNameMultipleTypesException(typeScriptType.CSharpType.Name);
 
                         typeIsPresent = true;
                         break;
@@ -31,33 +32,33 @@ namespace TSCodegen
 
             foreach (var property in typeScriptType.Properties)
                 if (!property.Value.CSharpType.IsGenericParameter)
-                    Add(property.Value);
+                    Add(property.Value, suppressErrors);
 
             foreach (var genericArgument in typeScriptType.GenericArguments)
                 if (!genericArgument.CSharpType.IsGenericParameter)
-                    Add(genericArgument);
+                    Add(genericArgument, suppressErrors);
 
             if (typeScriptType.HasParent)
-                Add(typeScriptType.Parent);
+                Add(typeScriptType.Parent, suppressErrors);
 
             if (typeScriptType.HasElement)
                 if (!typeScriptType.Element.CSharpType.IsGenericParameter)
-                    Add(typeScriptType.Element);
+                    Add(typeScriptType.Element, suppressErrors);
 
             if (typeScriptType.HasDeclaration)
             {
-                if (ForbiddenNamespaces.Contains(typeScriptType.CSharpType.Namespace))
-                    throw new Exception($"Namespace {typeScriptType.CSharpType.Namespace} entities are forbidden ({typeScriptType.CSharpType.Name})!");
+                if (!suppressErrors && ForbiddenNamespaces.Contains(typeScriptType.CSharpType.Namespace))
+                    throw new ForbiddenNamespaceException(typeScriptType);
 
                 if (!typeIsPresent)
                     Items.Add(typeScriptType);
             }
         }
 
-        public void Add(IEnumerable<TypeScriptType> typeScriptTypes)
+        public void Add(IEnumerable<TypeScriptType> typeScriptTypes, bool suppressErrors = false)
         {
             foreach (var typeScriptType in typeScriptTypes)
-                Add(typeScriptType);
+                Add(typeScriptType, suppressErrors);
         }
 
         public List<string> GetDeclarations(int indentationSize, bool export = false)
