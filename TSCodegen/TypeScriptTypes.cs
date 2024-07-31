@@ -37,6 +37,9 @@ namespace TSCodegen
                 if (!genericArgument.CSharpType.IsGenericParameter)
                     Add(genericArgument, suppressErrors);
 
+            foreach (var implementedInterface in typeScriptType.ImplementedInterfaces)
+                Add(implementedInterface, suppressErrors);
+
             if (typeScriptType.HasParent)
                 Add(typeScriptType.Parent, suppressErrors);
 

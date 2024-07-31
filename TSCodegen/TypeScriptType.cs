@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace TSCodegen
@@ -11,6 +12,7 @@ namespace TSCodegen
     {
         public string BaseTypeName { get; private set; } = "unknown";
         public bool IsPrimitive { get; private set; } = false;
+        public bool IsInterface { get; private set; } = false;
         public bool IsClass { get; private set; } = false;
         public bool IsEnum { get; private set; } = false;
         public bool IsArray { get; private set; } = false;
@@ -18,6 +20,7 @@ namespace TSCodegen
         public bool IsNullable { get; private set; } = false;
         public bool HasOverrides { get; private set; } = false;
 
+        public List<TypeScriptType> ImplementedInterfaces { get; private set; } = new List<TypeScriptType>();
         public TypeScriptType Parent { get; private set; } = null;
         public TypeScriptType Element { get; private set; } = null;
         public TypeScriptType DictionaryKey { get; private set; } = null;
@@ -28,10 +31,12 @@ namespace TSCodegen
 
         public Type CSharpType { get; private set; } = default;
 
+        public bool HasImplementedInterfaces => ImplementedInterfaces.Count > 0;
         public bool HasParent => Parent != null;
         public bool HasElement => Element != null;
         public bool IsGeneric => GenericArguments.Count > 0;
-        public bool HasDeclaration => IsEnum || IsClass;
+        public bool IsInterfaceOrClass => IsInterface || IsClass;
+        public bool HasDeclaration => IsInterfaceOrClass || IsEnum;
         public override string ToString() => GetFullTypeName();
 
         public TypeScriptType(Type type)
@@ -60,6 +65,12 @@ namespace TSCodegen
             if (InitializeAsPrimitive())
             {
                 IsPrimitive = true;
+                return;
+            }
+
+            if (CSharpType.IsInterface && InitializeAsIsInterface())
+            {
+                IsInterface = true;
                 return;
             }
 
@@ -192,6 +203,46 @@ namespace TSCodegen
             return false;
         }
 
+        private bool InitializeAsIsInterface()
+        {
+            BaseTypeName = CSharpType.GetNameWithoutGenericArity();
+
+            if (!Regex.IsMatch(BaseTypeName, @"^I[A-Z]"))
+                BaseTypeName = "I" + BaseTypeName;
+
+            if (CSharpType.IsGenericType)
+                CSharpType = CSharpType.GetGenericTypeDefinition();
+
+            foreach (var field in CSharpType.GetFields())
+            {
+                if (Properties.ContainsKey(field.Name))
+                {
+                    var fieldLastOverride = CSharpType.GetFieldLastOverride(field.Name);
+                    Properties[field.Name] = new TypeScriptType(fieldLastOverride.FieldType);
+                    HasOverrides = true;
+                }
+                else
+                    Properties.Add(field.Name, new TypeScriptType(field.FieldType));
+            }
+
+            foreach (var property in CSharpType.GetProperties())
+            {
+                if (Properties.ContainsKey(property.Name))
+                {
+                    var propertyLastOverride = CSharpType.GetPropertyLastOverride(property.Name);
+                    Properties[property.Name] = new TypeScriptType(propertyLastOverride.PropertyType);
+                    HasOverrides = true;
+                }
+                else
+                    Properties.Add(property.Name, new TypeScriptType(property.PropertyType));
+            }
+
+            foreach (var implementedInterface in CSharpType.GetInterfaces())
+                ImplementedInterfaces.Add(new TypeScriptType(implementedInterface));
+
+            return true;
+        }
+
         private bool InitializeAsClass()
         {
             BaseTypeName = (CSharpType.IsGenericParameter ? "" : "I") + CSharpType.GetNameWithoutGenericArity();
@@ -252,7 +303,7 @@ namespace TSCodegen
         {
             var result = BaseTypeName;
 
-            if (IsClass && IsGeneric)
+            if (IsInterfaceOrClass && IsGeneric)
             {
                 var generics = OpenGenericArguments.Select(oga => oga.GetOpenGenericTypeName());
                 result += $"<{string.Join(", ", generics)}>";
@@ -265,7 +316,7 @@ namespace TSCodegen
         {
             var result = Element?.GetFullTypeName() ?? BaseTypeName;
 
-            if (IsClass && IsGeneric)
+            if (IsInterfaceOrClass && IsGeneric)
             {
                 var generics = GenericArguments.Select(ga => ga.GetFullTypeName());
                 result += $"<{string.Join(", ", generics)}>";
@@ -288,16 +339,23 @@ namespace TSCodegen
             var result = new List<string>();
             var indentation = new string(' ', indentationSize);
 
-            if (IsClass)
+            if (IsInterfaceOrClass)
             {
                 if (HasOverrides)
                     result.Add($"// Inheritance replaced with expanded items as some of them were overridden");
 
                 var typeName = GetOpenGenericTypeName();
                 var declarationHeader = $"{typeName}";
+                var baseImplementations = new List<string>();
 
                 if (HasParent && !HasOverrides)
-                    declarationHeader += $" extends {Parent.GetFullTypeName()}";
+                    baseImplementations.Add(Parent.GetFullTypeName());
+
+                if (HasImplementedInterfaces)
+                    baseImplementations.AddRange(ImplementedInterfaces.Select(ii => ii.GetFullTypeName()));
+
+                if (baseImplementations.Count > 0)
+                    declarationHeader += $" extends {string.Join(", ", baseImplementations)}";
 
                 result.Add((export ? "export " : "") + $"interface {declarationHeader} {{");
 
