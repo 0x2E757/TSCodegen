@@ -6,14 +6,285 @@
         public void Enum()
         {
             var tsTypes = new TypeScriptTypes();
-            tsTypes.Add(new TypeScriptType(typeof(Classes.Enum)));
+            tsTypes.Add(new TypeScriptType(typeof(Enums.SimpleEnum)));
             var declarations = tsTypes.GetDeclarations(4);
             var target = new List<string>
             {
-                "enum Enum {",
+                "enum SimpleEnum {",
                 "    Foo = 1,",
                 "    Bar = 2,",
                 "    Baz = 4,",
+                "}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void Interface()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IInterface)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IInterface {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void ExportInterface()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IInterface)));
+            var declarations = tsTypes.GetDeclarations(4, true);
+            var target = new List<string>
+            {
+                "export interface IInterface {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void InterfaceWithProperties()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IInterfaceWithProperties)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IInterfaceWithProperties {",
+                "    boolProperty: boolean;",
+                "    intProperty: number;",
+                "    stringProperty: string;",
+                "}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void ChildInterface()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IChildInterface)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IInterface {}",
+                "",
+                "interface IChildInterface extends IInterface {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void GenericInterfaceWithProperties()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IGenericInterfaceWithProperties<>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IGenericInterfaceWithProperties<T> {",
+                "    arrayProperty: T[];",
+                "}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceA1()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceA1<>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IGenericInterfaceA<T> {",
+                "    propertyA: T;",
+                "}",
+                "",
+                "interface IChildGenericInterfaceA1<T> extends IGenericInterfaceA<T> {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceA2()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceA2<Enums.SimpleEnum>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "enum SimpleEnum {",
+                "    Foo = 1,",
+                "    Bar = 2,",
+                "    Baz = 4,",
+                "}",
+                "",
+                "interface IGenericInterfaceA<T> {",
+                "    propertyA: T;",
+                "}",
+                "",
+                "interface IChildGenericInterfaceA2<T> extends IGenericInterfaceA<number> {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceB1()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceB1<,>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IGenericInterfaceB<T, U> {",
+                "    propertyB1: T;",
+                "    propertyB2: U;",
+                "}",
+                "",
+                "interface IChildGenericInterfaceB1<T, U> extends IGenericInterfaceB<T, U> {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceB2()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceB2<Interfaces.IInterface, Interfaces.IChildGenericInterfaceA2<Enums.SimpleEnum>>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IInterface {}",
+                "",
+                "enum SimpleEnum {",
+                "    Foo = 1,",
+                "    Bar = 2,",
+                "    Baz = 4,",
+                "}",
+                "",
+                "interface IGenericInterfaceA<T> {",
+                "    propertyA: T;",
+                "}",
+                "",
+                "interface IChildGenericInterfaceA2<T> extends IGenericInterfaceA<number> {}",
+                "",
+                "interface IGenericInterfaceB<T, U> {",
+                "    propertyB1: T;",
+                "    propertyB2: U;",
+                "}",
+                "",
+                "interface IChildGenericInterfaceB2<T, U> extends IGenericInterfaceB<boolean, number> {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceC1()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceC1<,,>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IGenericInterfaceC<T, U, V> {",
+                "    propertyC1: T;",
+                "    propertyC2: U;",
+                "    propertyC3: V;",
+                "}",
+                "",
+                "interface IChildGenericInterfaceC1<T, U, V> extends IGenericInterfaceC<V, U, T> {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceC2()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceC2<bool, int, string>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IInterface {}",
+                "",
+                "interface IGenericInterface<T> {}",
+                "",
+                "enum SimpleEnum {",
+                "    Foo = 1,",
+                "    Bar = 2,",
+                "    Baz = 4,",
+                "}",
+                "",
+                "interface IGenericInterfaceC<T, U, V> {",
+                "    propertyC1: T;",
+                "    propertyC2: U;",
+                "    propertyC3: V;",
+                "}",
+                "",
+                "interface IChildGenericInterfaceC2<T, U, V> extends IGenericInterfaceC<IInterface, IGenericInterface<U>, SimpleEnum> {}",
+            };
+
+            Assert.That(declarations, Has.Count.EqualTo(target.Count));
+            for (var n = 0; n < declarations.Count; n += 1)
+                Assert.That(declarations[n], Is.EqualTo(target[n]));
+        }
+
+        [Test]
+        public void GenericInterfaceWithDifferentArguments()
+        {
+            var tsTypes = new TypeScriptTypes();
+            tsTypes.Add(new TypeScriptType(typeof(Interfaces.IGenericInterfaceB<Interfaces.IGenericInterfaceA<Interfaces.IInterfaceA>, Interfaces.IGenericInterfaceA<Interfaces.IInterfaceB>>)));
+            var declarations = tsTypes.GetDeclarations(4);
+            var target = new List<string>
+            {
+                "interface IInterfaceA {}",
+                "",
+                "interface IGenericInterfaceA<T> {",
+                "    propertyA: T;",
+                "}",
+                "",
+                "interface IInterfaceB {}",
+                "",
+                "interface IGenericInterfaceB<T, U> {",
+                "    propertyB1: T;",
+                "    propertyB2: U;",
                 "}",
             };
 
@@ -154,11 +425,11 @@
         public void ChildGenericClassA2()
         {
             var tsTypes = new TypeScriptTypes();
-            tsTypes.Add(new TypeScriptType(typeof(Classes.ChildGenericClassA2<Classes.Enum>)));
+            tsTypes.Add(new TypeScriptType(typeof(Classes.ChildGenericClassA2<Enums.SimpleEnum>)));
             var declarations = tsTypes.GetDeclarations(4);
             var target = new List<string>
             {
-                "enum Enum {",
+                "enum SimpleEnum {",
                 "    Foo = 1,",
                 "    Bar = 2,",
                 "    Baz = 4,",
@@ -201,13 +472,13 @@
         public void ChildGenericClassB2()
         {
             var tsTypes = new TypeScriptTypes();
-            tsTypes.Add(new TypeScriptType(typeof(Classes.ChildGenericClassB2<Classes.Class, Classes.ChildGenericClassA2<Classes.Enum>>)));
+            tsTypes.Add(new TypeScriptType(typeof(Classes.ChildGenericClassB2<Classes.Class, Classes.ChildGenericClassA2<Enums.SimpleEnum>>)));
             var declarations = tsTypes.GetDeclarations(4);
             var target = new List<string>
             {
                 "interface IClass {}",
                 "",
-                "enum Enum {",
+                "enum SimpleEnum {",
                 "    Foo = 1,",
                 "    Bar = 2,",
                 "    Baz = 4,",
@@ -266,7 +537,7 @@
                 "",
                 "interface IGenericClass<T> {}",
                 "",
-                "enum Enum {",
+                "enum SimpleEnum {",
                 "    Foo = 1,",
                 "    Bar = 2,",
                 "    Baz = 4,",
@@ -278,7 +549,7 @@
                 "    propertyC3: V;",
                 "}",
                 "",
-                "interface IChildGenericClassC2<T, U, V> extends IGenericClassC<IClass, IGenericClass<U>, Enum> {}",
+                "interface IChildGenericClassC2<T, U, V> extends IGenericClassC<IClass, IGenericClass<U>, SimpleEnum> {}",
             };
 
             Assert.That(declarations, Has.Count.EqualTo(target.Count));

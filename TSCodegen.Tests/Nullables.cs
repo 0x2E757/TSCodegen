@@ -21,9 +21,9 @@
         [Test]
         public void Enum()
         {
-            var tsType = new TypeScriptType(typeof(Classes.Enum?));
+            var tsType = new TypeScriptType(typeof(Enums.SimpleEnum?));
 
-            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("Enum | null"));
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("SimpleEnum | null"));
         }
     }
 }

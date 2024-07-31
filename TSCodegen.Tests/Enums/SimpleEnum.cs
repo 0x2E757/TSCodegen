@@ -1,6 +1,6 @@
-﻿namespace TSCodegen.Tests.Classes
+﻿namespace TSCodegen.Tests.Enums
 {
-    internal enum Enum
+    internal enum SimpleEnum
     {
         Foo = 1,
         Bar = 2,

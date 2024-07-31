@@ -3,6 +3,190 @@
     internal class FullTypeName
     {
         [Test]
+        public void Interface()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IInterface));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IInterface"));
+        }
+
+        [Test]
+        public void InterfaceWithProperties()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IInterfaceWithProperties));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IInterfaceWithProperties"));
+        }
+
+        [Test]
+        public void OpenGenericInterface()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IGenericInterface<>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IGenericInterface<T>"));
+        }
+
+        [Test]
+        public void GenericInterface()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IGenericInterface<int>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IGenericInterface<number>"));
+        }
+
+        [Test]
+        public void OpenGenericInterfaceA()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IGenericInterfaceA<>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IGenericInterfaceA<T>"));
+        }
+
+        [Test]
+        public void GenericInterfaceA()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IGenericInterfaceA<int>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IGenericInterfaceA<number>"));
+        }
+
+        [Test]
+        public void OpenGenericInterfaceB()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IGenericInterfaceB<,>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IGenericInterfaceB<T, U>"));
+        }
+
+        [Test]
+        public void GenericInterfaceB()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IGenericInterfaceB<int, bool>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IGenericInterfaceB<number, boolean>"));
+        }
+
+        [Test]
+        public void OpenGenericInterfaceC()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IGenericInterfaceC<,,>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IGenericInterfaceC<T, U, V>"));
+        }
+
+        [Test]
+        public void GenericInterfaceC()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IGenericInterfaceC<int, bool, string>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IGenericInterfaceC<number, boolean, string>"));
+        }
+
+        [Test]
+        public void ChildInterface()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildInterface));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildInterface"));
+        }
+
+        [Test]
+        public void OpenChildGenericInterfaceA1()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceA1<>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceA1<T>"));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceA1()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceA1<int>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceA1<number>"));
+        }
+
+        [Test]
+        public void OpenChildGenericInterfaceA2()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceA2<>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceA2<T>"));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceA2()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceA2<int>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceA2<number>"));
+        }
+
+        [Test]
+        public void OpenChildGenericInterfaceB1()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceB1<,>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceB1<T, U>"));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceB1()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceB1<int, bool>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceB1<number, boolean>"));
+        }
+
+        [Test]
+        public void OpenChildGenericInterfaceB2()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceB2<,>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceB2<T, U>"));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceB2()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceB2<int, bool>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceB2<number, boolean>"));
+        }
+
+        [Test]
+        public void OpenChildGenericInterfaceC1()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceC1<,,>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceC1<T, U, V>"));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceC1()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceC1<int, bool, string>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceC1<number, boolean, string>"));
+        }
+
+        [Test]
+        public void OpenChildGenericInterfaceC2()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceC2<,,>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceC2<T, U, V>"));
+        }
+
+        [Test]
+        public void ChildGenericInterfaceC2()
+        {
+            var tsType = new TypeScriptType(typeof(Interfaces.IChildGenericInterfaceC2<int, bool, string>));
+
+            Assert.That(tsType.GetFullTypeName(), Is.EqualTo("IChildGenericInterfaceC2<number, boolean, string>"));
+        }
+
+        [Test]
         public void Class()
         {
             var tsType = new TypeScriptType(typeof(Classes.Class));

@@ -50,18 +50,22 @@ namespace TSCodegen.Tests
             var tsTypeIFormFile = new TypeScriptType(typeof(Dictionary<int, IFormFile>));
             var tsTypeIEnumerable = new TypeScriptType(typeof(Dictionary<int, IEnumerable<int>>));
             var tsTypeIDictionary = new TypeScriptType(typeof(Dictionary<int, IDictionary<int, int>>));
+            var tsTypeInterface = new TypeScriptType(typeof(Dictionary<int, Interfaces.IInterface>));
+            var tsTypeGenericInterface = new TypeScriptType(typeof(Dictionary<int, Interfaces.IGenericInterface<int>>));
             var tsTypeClass = new TypeScriptType(typeof(Dictionary<int, Classes.Class>));
             var tsTypeGenericClass = new TypeScriptType(typeof(Dictionary<int, Classes.GenericClass<int>>));
-            var tsTypeEnum = new TypeScriptType(typeof(Dictionary<int, Classes.Enum>));
+            var tsTypeEnum = new TypeScriptType(typeof(Dictionary<int, Enums.SimpleEnum>));
 
             Assert.That(tsTypeDateTime.GetFullTypeName(), Is.EqualTo("Record<number, Date | DateTimeString>"));
             Assert.That(tsTypeTimeSpan.GetFullTypeName(), Is.EqualTo("Record<number, TimeString>"));
             Assert.That(tsTypeIFormFile.GetFullTypeName(), Is.EqualTo("Record<number, File>"));
             Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("Record<number, number[]>"));
             Assert.That(tsTypeIDictionary.GetFullTypeName(), Is.EqualTo("Record<number, Record<number, number>>"));
+            Assert.That(tsTypeInterface.GetFullTypeName(), Is.EqualTo("Record<number, IInterface>"));
+            Assert.That(tsTypeGenericInterface.GetFullTypeName(), Is.EqualTo("Record<number, IGenericInterface<number>>"));
             Assert.That(tsTypeClass.GetFullTypeName(), Is.EqualTo("Record<number, IClass>"));
             Assert.That(tsTypeGenericClass.GetFullTypeName(), Is.EqualTo("Record<number, IGenericClass<number>>"));
-            Assert.That(tsTypeEnum.GetFullTypeName(), Is.EqualTo("Record<number, Enum>"));
+            Assert.That(tsTypeEnum.GetFullTypeName(), Is.EqualTo("Record<number, SimpleEnum>"));
         }
     }
 }

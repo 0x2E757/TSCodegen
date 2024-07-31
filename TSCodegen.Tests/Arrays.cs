@@ -59,6 +59,30 @@ namespace TSCodegen.Tests
         [Test]
         public void Interface()
         {
+            var tsTypeArray = new TypeScriptType(typeof(Interfaces.IInterface[]));
+            var tsTypeList = new TypeScriptType(typeof(List<Interfaces.IInterface>));
+            var tsTypeIEnumerable = new TypeScriptType(typeof(IEnumerable<Interfaces.IInterface>));
+
+            Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("IInterface[]"));
+            Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("IInterface[]"));
+            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("IInterface[]"));
+        }
+
+        [Test]
+        public void GenericInterface()
+        {
+            var tsTypeArray = new TypeScriptType(typeof(Interfaces.IGenericInterface<int>[]));
+            var tsTypeList = new TypeScriptType(typeof(List<Interfaces.IGenericInterface<int>>));
+            var tsTypeIEnumerable = new TypeScriptType(typeof(IEnumerable<Interfaces.IGenericInterface<int>>));
+
+            Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("IGenericInterface<number>[]"));
+            Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("IGenericInterface<number>[]"));
+            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("IGenericInterface<number>[]"));
+        }
+
+        [Test]
+        public void Class()
+        {
             var tsTypeArray = new TypeScriptType(typeof(Classes.Class[]));
             var tsTypeList = new TypeScriptType(typeof(List<Classes.Class>));
             var tsTypeIEnumerable = new TypeScriptType(typeof(IEnumerable<Classes.Class>));
@@ -69,7 +93,7 @@ namespace TSCodegen.Tests
         }
 
         [Test]
-        public void GenericInterface()
+        public void GenericClass()
         {
             var tsTypeArray = new TypeScriptType(typeof(Classes.GenericClass<int>[]));
             var tsTypeList = new TypeScriptType(typeof(List<Classes.GenericClass<int>>));
@@ -83,21 +107,21 @@ namespace TSCodegen.Tests
         [Test]
         public void Enum()
         {
-            var tsTypeArray = new TypeScriptType(typeof(Classes.Enum[]));
-            var tsTypeList = new TypeScriptType(typeof(List<Classes.Enum>));
-            var tsTypeIEnumerable = new TypeScriptType(typeof(IEnumerable<Classes.Enum>));
+            var tsTypeArray = new TypeScriptType(typeof(Enums.SimpleEnum[]));
+            var tsTypeList = new TypeScriptType(typeof(List<Enums.SimpleEnum>));
+            var tsTypeIEnumerable = new TypeScriptType(typeof(IEnumerable<Enums.SimpleEnum>));
 
-            Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("Enum[]"));
-            Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("Enum[]"));
-            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("Enum[]"));
+            Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("SimpleEnum[]"));
+            Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("SimpleEnum[]"));
+            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("SimpleEnum[]"));
 
-            var tsTypeNullableArray = new TypeScriptType(typeof(Classes.Enum?[]));
-            var tsTypeNullableList = new TypeScriptType(typeof(List<Classes.Enum?>));
-            var tsTypeNullableIEnumerable = new TypeScriptType(typeof(IEnumerable<Classes.Enum?>));
+            var tsTypeNullableArray = new TypeScriptType(typeof(Enums.SimpleEnum?[]));
+            var tsTypeNullableList = new TypeScriptType(typeof(List<Enums.SimpleEnum?>));
+            var tsTypeNullableIEnumerable = new TypeScriptType(typeof(IEnumerable<Enums.SimpleEnum?>));
 
-            Assert.That(tsTypeNullableArray.GetFullTypeName(), Is.EqualTo("(Enum | null)[]"));
-            Assert.That(tsTypeNullableList.GetFullTypeName(), Is.EqualTo("(Enum | null)[]"));
-            Assert.That(tsTypeNullableIEnumerable.GetFullTypeName(), Is.EqualTo("(Enum | null)[]"));
+            Assert.That(tsTypeNullableArray.GetFullTypeName(), Is.EqualTo("(SimpleEnum | null)[]"));
+            Assert.That(tsTypeNullableList.GetFullTypeName(), Is.EqualTo("(SimpleEnum | null)[]"));
+            Assert.That(tsTypeNullableIEnumerable.GetFullTypeName(), Is.EqualTo("(SimpleEnum | null)[]"));
         }
 
         [Test]
@@ -178,30 +202,6 @@ namespace TSCodegen.Tests
             Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("Record<number, number>[]"));
             Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("Record<number, number>[]"));
             Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("Record<number, number>[]"));
-        }
-
-        [Test]
-        public void Class()
-        {
-            var tsTypeArray = new TypeScriptType(typeof(Classes.Class[]));
-            var tsTypeList = new TypeScriptType(typeof(List<Classes.Class>));
-            var tsTypeIEnumerable = new TypeScriptType(typeof(IEnumerable<Classes.Class>));
-
-            Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("IClass[]"));
-            Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("IClass[]"));
-            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("IClass[]"));
-        }
-
-        [Test]
-        public void GenericClass()
-        {
-            var tsTypeArray = new TypeScriptType(typeof(Classes.GenericClass<int>[]));
-            var tsTypeList = new TypeScriptType(typeof(List<Classes.GenericClass<int>>));
-            var tsTypeIEnumerable = new TypeScriptType(typeof(IEnumerable<Classes.GenericClass<int>>));
-
-            Assert.That(tsTypeArray.GetFullTypeName(), Is.EqualTo("IGenericClass<number>[]"));
-            Assert.That(tsTypeList.GetFullTypeName(), Is.EqualTo("IGenericClass<number>[]"));
-            Assert.That(tsTypeIEnumerable.GetFullTypeName(), Is.EqualTo("IGenericClass<number>[]"));
         }
     }
 }
