@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>TSCodegen</id>
-    <version>1.7.1</version>
+    <version>1.8.0</version>
     <authors>0x2E757</authors>
     <owners>0x2E757</owners>
     <license type="expression">MIT</license>
@@ -12,7 +12,7 @@
     <readme>README.md</readme>
     <icon>icon.png</icon>
     <description>Library for C# to TypeScript type conversion</description>
-    <copyright>Copyright 2023</copyright>
+    <copyright>Copyright 2024</copyright>
     <tags>tscodegen codegen code generation generator c# csharp sharp ts typescript type types declaration declarations interfaces enums</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
